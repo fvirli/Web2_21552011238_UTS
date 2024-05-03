@@ -106,9 +106,8 @@ class Library {
             }
             $current->next = $node;
         }
-        echo "<script>alert('Buku berhasil ditambahkan.');</script>";
     }
-
+    
     public function pinjamBuku($judul) {
         // Memeriksa apakah telah mencapai batas peminjaman
         if ($this->peminjamanSekarang >= $this->batasPeminjaman) {
@@ -245,27 +244,27 @@ $library->pinjamBuku("The Power of Language");
 $library->pinjamBuku("Potongan Tubuh");
 $library->pinjamBuku("Siapa yang Datang ke Pemakamanku saat Aku Mati Nanti");
 
-
 //contoh logika penambaham buku
 $library->tambahBuku(new Book(8, "Judul Buku Baru", "Penulis Buku Baru", "2024", "978-123-4567-89-0", "Penerbit Buku Baru"));
 
-// variabel pencarian
+// logika pencarian
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
 
-// logika pencarian
-$filteredBooks = [];
-if (!empty($keyword)) {
-    $filteredBooks = $library->searchBooks($keyword);
-} else {
-    $filteredBooks = $library->getBooks();
-}
 // logika sorting
 if ($sort === 'judul') {
     $filteredBooks = $library->sortBooksByJudul();
 } elseif ($sort === 'tahun') {
     $filteredBooks = $library->sortBooksByTahun();
+} else {
+    $filteredBooks = $library->getBooks(); // Inisialisasi $filteredBooks dengan semua buku jika tidak ada sorting yang dipilih
 }
+
+// logika pencarian
+if (!empty($keyword)) {
+    $filteredBooks = $library->searchBooks($keyword);
+}
+
 
 // logika hapus buku
 if (isset($_POST['hapus'])) {
@@ -280,6 +279,20 @@ if (isset($_POST['hapus'])) {
 if (isset($_POST['kembalikan'])) {
     $judulBuku = $_POST['kembalikan'];
     $library->kembalikanBuku($judulBuku);
+}
+
+//logika penambahan buku
+if(isset($_POST['tambahkan'])){
+    $judul = $_POST['judul'];
+    $penulis = $_POST['penulis'];
+    $tahun = $_POST['tahun'];
+    $isbn = $_POST['isbn'];
+    $penerbit = $_POST['penerbit'];
+
+    $library->tambahBuku(new Book(null, $judul, $penulis, $tahun, $isbn, $penerbit));
+    
+    // Update kembali daftar buku yang ditampilkan setelah menambahkan buku baru
+    $filteredBooks = $library->getBooks();
 }
 
 ?>
